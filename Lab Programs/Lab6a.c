@@ -8,6 +8,10 @@ struct node {
 
 struct node* create(int x) {
     struct node *n = malloc(sizeof(struct node));
+    if (!n) {
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
     n->data = x;
     n->next = NULL;
     return n;
@@ -16,30 +20,46 @@ struct node* create(int x) {
 struct node* insert(struct node *head, int x) {
     struct node *n = create(x);
     n->next = head;
+    printf("Inserted %d\n", x);
     return n;
 }
 
 void display(struct node *h) {
+    if (!h) {
+        printf("List is empty\n");
+        return;
+    }
+    printf("List elements: ");
     while (h) {
         printf("%d ", h->data);
         h = h->next;
     }
+    printf("\n");
 }
 
 struct node* reverse(struct node *h) {
     struct node *p = NULL, *c = h, *n;
+    if (!h) {
+        printf("List is empty. Cannot reverse\n");
+        return h;
+    }
     while (c) {
         n = c->next;
         c->next = p;
         p = c;
         c = n;
     }
+    printf("List reversed\n");
     return p;
 }
 
 struct node* sort(struct node *h) {
     struct node *i, *j;
     int t;
+    if (!h) {
+        printf("List is empty. Cannot sort\n");
+        return h;
+    }
     for (i = h; i; i = i->next)
         for (j = i->next; j; j = j->next)
             if (i->data > j->data) {
@@ -47,26 +67,54 @@ struct node* sort(struct node *h) {
                 i->data = j->data;
                 j->data = t;
             }
+    printf("List sorted\n");
     return h;
 }
 
 struct node* concat(struct node *a, struct node *b) {
     struct node *t = a;
-    if (!a) return b;
-    while (t->next) t = t->next;
+    if (!a && !b) {
+        printf("Both lists are empty\n");
+        return NULL;
+    }
+    if (!a) {
+        printf("First list empty. Second list returned\n");
+        return b;
+    }
+    while (t->next)
+        t = t->next;
     t->next = b;
+    printf("Lists concatenated\n");
     return a;
 }
 
 int main() {
     int m, n, x;
     struct node *h1 = NULL, *h2 = NULL;
-    scanf("%d%d", &m, &n);
-    while (m--) { scanf("%d", &x); h1 = insert(h1, x); }
-    while (n--) { scanf("%d", &x); h2 = insert(h2, x); }
+
+    printf("Enter number of nodes in list 1 and list 2: ");
+    scanf("%d %d", &m, &n);
+
+    printf("Enter elements of list 1:\n");
+    while (m--) {
+        scanf("%d", &x);
+        h1 = insert(h1, x);
+    }
+
+    printf("Enter elements of list 2:\n");
+    while (n--) {
+        scanf("%d", &x);
+        h2 = insert(h2, x);
+    }
+
     h1 = reverse(h1);
+    display(h1);
+
     h2 = sort(h2);
+    display(h2);
+
     h1 = concat(h1, h2);
     display(h1);
+
     return 0;
 }
